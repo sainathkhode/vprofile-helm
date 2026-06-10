@@ -1,6 +1,6 @@
 app:
-  image: vprofilecontainers/vproapp
-  tag: latest
+  image: 018789814334.dkr.ecr.ap-southeast-2.amazonaws.com/vprofileappimg
+  tag: d79d10b
   replicas: 1
   containerPort: 8080
   servicePort: 8080
