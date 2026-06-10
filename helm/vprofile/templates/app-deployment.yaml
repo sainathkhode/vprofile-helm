@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vproapp
+  labels:
+    app: vproapp
+spec:
+  replicas: {{ .Values.app.replicas }}
+  selector:
+    matchLabels:
+      app: vproapp
+  template:
+    metadata:
+      labels:
+        app: vproapp
+    spec:
+{{- if .Values.dockerregistry.enabled }}
+      imagePullSecrets:
+        - name: dockerregistry-secret
+{{- end }}
+{{- if .Values.initcontainers.commands }}
+      initContainers:
+{{- range $idx, $cmd := .Values.initcontainers.commands }}
+      - name: init-wait-{{ $idx }}
+        image: {{ $.Values.initcontainers.image }}
+        command:
+          - sh
+          - -c
+          - {{ $cmd | quote }}
+{{- end }}
+{{- end }}
+      containers:
+      - name: vproapp
+        image: {{ .Values.app.image }}:{{ .Values.app.tag }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: app-port
+          containerPort: {{ .Values.app.containerPort }}
